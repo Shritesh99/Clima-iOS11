@@ -33,7 +33,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         
         
         //TODO:Set up the location manager here.
-    
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestWhenInUseAuthorization()
@@ -52,6 +51,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                 let weatherJSON : JSON = JSON(response.result.value!)
                 
                 self.updateWeatherData(json: weatherJSON)
+                print(weatherJSON)
             }
             else {
                 print("Error \(String(describing: response.result.error))")
@@ -89,7 +89,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     func updateUI(){
         cityLabel.text = weatherDataModel.city
-        temperatureLabel.text = "\(weatherDataModel.temperature)"
+        temperatureLabel.text = "\(weatherDataModel.temperature)℃"
         weatherIcon.image = UIImage(named: weatherDataModel.weatherIconName)
     }
     
@@ -127,12 +127,20 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     
     //Write the userEnteredANewCityName Delegate method here:
-    
-
-    
+    func userEnteredANewCityName(city : String){
+        let params : [String : String] = ["q" : city ,"appid" : APP_ID]
+        
+        getWeatherData(url: WEATHER_URL, parameters: params)
+    }
     //Write the PrepareForSegue Method here
     
-    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "changeCityName" {
+         let destinationVC = segue.destination as! ChangeCityViewController
+            destinationVC.delegate = self as? ChangeCityDelegate
+        }
+    }
     
     
     
